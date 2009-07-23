@@ -1,0 +1,25 @@
+#created on: Jul 22, 2009
+package edu.ucsc.eis.spaceinvaders
+
+import org.newdawn.spaceinvaders.*;
+
+global java.lang.Long delta;
+
+rule "Move each entity, then redraw"
+    when
+        $entity : Entity()
+    then
+        $entity.move(delta);
+        $entity.draw();
+end
+
+rule "Process collisions"
+    when
+        $entity1 : Entity()
+        $entity2 : Entity(this != $entity1, eval($entity1.collidesWith($entity2)))
+    then
+        $entity1.collidedWith($entity2);
+        $entity2.collidedWith($entity1);
+end
+
+
