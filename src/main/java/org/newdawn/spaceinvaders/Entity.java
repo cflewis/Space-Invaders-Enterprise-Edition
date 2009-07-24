@@ -114,6 +114,10 @@ public abstract class Entity {
 	public int getX() {
 		return (int) x;
 	}
+	
+	public void setX(int x) {
+		this.x = x;
+	}
 
 	/**
 	 * Get the y location of this entity
@@ -122,6 +126,10 @@ public abstract class Entity {
 	 */
 	public int getY() {
 		return (int) y;
+	}
+	
+	public void setY(int y) {
+		this.y = y;
 	}
 	
 	/**

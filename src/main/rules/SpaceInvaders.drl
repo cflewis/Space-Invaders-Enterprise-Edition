@@ -2,8 +2,11 @@
 package edu.ucsc.eis.spaceinvaders
 
 import org.newdawn.spaceinvaders.*;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 global java.lang.Long delta;
+global SpaceInvadersRules game; 
 
 rule "Move each entity, then redraw"
     when
@@ -13,13 +16,100 @@ rule "Move each entity, then redraw"
         $entity.draw();
 end
 
-rule "Process collisions"
+// This is going to do a cross-product join, which is going to return
+// a lot of entities. This seems to execute OK, but we can get better
+// speed by creating some rule-groups (eg. assess state, clean up state, assess
+// win), but then we lose some of the declarative niceties.
+rule "Process bullets hitting aliens"
     when
-        $entity1 : Entity()
-        $entity2 : Entity(this != $entity1, eval($entity1.collidesWith($entity2)))
+        $shot : ShotEntity()
+        $alien : AlienEntity(this != $shot, eval($shot.collidesWith($alien)))
+        $otherAlien : AlienEntity()
     then
-        $entity1.collidedWith($entity2);
-        $entity2.collidedWith($entity1);
+        game.getEntities().remove($shot);
+        game.getEntities().remove($alien);
+        $otherAlien.setHorizontalMovement($otherAlien.getHorizontalMovement() * 1.00);
 end
 
+//rule "Process bullets hitting aliens"
+//    when
+//        $shot : ShotEntity()
+//        $alien : AlienEntity(this != $shot, eval($shot.collidesWith($alien)))
+//        $otherAliens : ArrayList() from collect (AlienEntity(this != $alien))
+//    then
+//        game.getEntities().remove($shot);
+//        game.getEntities().remove($alien);
+//        
+//        for (int i = 0; i < $otherAliens.size();i++)
+//        {
+//            AlienEntity $otherAlien = (AlienEntity)$otherAliens.get(i);
+//            $otherAlien.setHorizontalMovement($otherAlien.getHorizontalMovement() * 1.00);
+//        }
+//end
 
+// I think Drools only looks for getters and setters on the LHS,
+// not the RHS
+rule "Reverse aliens if one reachs the edge of the screen"
+    when
+        $alien : AlienEntity()
+        exists (AlienEntity(x < 10) or AlienEntity(x > 750))
+    then
+        $alien.setHorizontalMovement(-$alien.getHorizontalMovement());
+        $alien.setY($alien.getY() + 10);
+end    
+
+rule "Halt ship at each tick"
+    salience 1
+    when
+        $ship : ShipEntity()
+    then
+        $ship.setHorizontalMovement(0);
+end    
+
+rule "Move left when left button pressed"
+    when
+        eval(game.getWindow().isKeyPressed(KeyEvent.VK_LEFT))
+        not (eval(game.getWindow().isKeyPressed(KeyEvent.VK_RIGHT)))
+        $ship : ShipEntity()
+    then
+        $ship.setHorizontalMovement(-300);
+end
+
+rule "Move right when right button pressed"
+    when
+        eval(game.getWindow().isKeyPressed(KeyEvent.VK_RIGHT))
+        not (eval(game.getWindow().isKeyPressed(KeyEvent.VK_LEFT)))
+        $ship : ShipEntity()
+    then
+        $ship.setHorizontalMovement(300);
+end
+
+rule "Fire the gun when space is pressed"
+    when
+        eval(game.getWindow().isKeyPressed(KeyEvent.VK_SPACE))
+        $ship : ShipEntity()
+    then
+        game.tryToFire();
+end
+
+rule "End the game when ESC is pressed"
+    when
+        eval(game.getWindow().isKeyPressed(KeyEvent.VK_ESCAPE))
+    then
+        System.exit(0);
+end       
+
+rule "End the game when all aliens are killed"
+    salience -1
+    when
+        not (exists AlienEntity())
+    then
+        game.notifyWin();
+end
+
+rule "End the game when an alien reaches the bottom"
+    when
+        exists AlienEntity(y > 570)
+    then
+        game.notifyDeath();
+end

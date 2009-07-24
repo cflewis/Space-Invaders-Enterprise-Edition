@@ -1,6 +1,7 @@
 package edu.ucsc.eis.spaceinvaders;
 
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
@@ -17,6 +18,7 @@ import org.drools.runtime.StatelessKnowledgeSession;
 
 import org.newdawn.spaceinvaders.Entity;
 import org.newdawn.spaceinvaders.Game;
+import org.newdawn.spaceinvaders.GameWindow;
 import org.newdawn.spaceinvaders.GameWindowCallback;
 import org.newdawn.spaceinvaders.SystemTimer;
 
@@ -55,8 +57,8 @@ public class SpaceInvadersRules extends Game implements GameWindowCallback {
 			System.exit(1);
 		}
 		
-		//ksession.insert(this);
-		ksession.execute(this);
+		ksession.setGlobal("game", this);
+		//ksession.execute(this);
 		//ksession.fireAllRules();
 		
 		org.newdawn.spaceinvaders.ResourceFactory.get().setRenderingType(org.newdawn.spaceinvaders.ResourceFactory.JAVA2D);
@@ -111,96 +113,22 @@ public class SpaceInvadersRules extends Game implements GameWindowCallback {
 		}
 		
 		//ksession.fireAllRules();
-		if (!waitingForKeyPress) { ksession.execute(entities); }
-		
-		// cycle round asking each entity to move itself
-//		if (!waitingForKeyPress) {
-//			for (int i=0;i<entities.size();i++) {
-//				Entity entity = (Entity) entities.get(i);
-//				
-//				entity.move(delta);
-//			}
-//		}
-		
-		// cycle round drawing all the entities we have in the game
-//		for (int i=0;i<entities.size();i++) {
-//			Entity entity = (Entity) entities.get(i);
-//			
-//			entity.draw();
-//		}
-				
-		// brute force collisions, compare every entity against
-		// every other entity. If any of them collide notify 
-		// both entities that the collision has occured
-//		for (int p=0;p<entities.size();p++) {
-//			for (int s=p+1;s<entities.size();s++) {
-//				Entity me = (Entity) entities.get(p);
-//				Entity him = (Entity) entities.get(s);
-//				
-//				if (me.collidesWith(him)) {
-//					me.collidedWith(him);
-//					him.collidedWith(me);
-//				}
-//			}
-//		}
-				
-		// remove any entity that has been marked for clear up
-		entities.removeAll(removeList);
-		removeList.clear();
-
-		// if a game event has indicated that game logic should
-		// be resolved, cycle round every entity requesting that
-		// their personal logic should be considered.
-		if (logicRequiredThisLoop) {
-			for (int i=0;i<entities.size();i++) {
-				Entity entity = (Entity) entities.get(i);
-				entity.doLogic();
-			}
-			
-			logicRequiredThisLoop = false;
-		}
-		
-		// if we're waiting for an "any key" press then draw the 
-		// current message 
 		if (waitingForKeyPress) {
 			message.draw(325,250);
-		}
-		
-		// resolve the movemfent of the ship. First assume the ship 
-		// isn't moving. If either cursor key is pressed then
-		// update the movement appropraitely
-		ship.setHorizontalMovement(0);
-		
-		boolean leftPressed = window.isKeyPressed(KeyEvent.VK_LEFT);
-		boolean rightPressed = window.isKeyPressed(KeyEvent.VK_RIGHT);
-		boolean firePressed = window.isKeyPressed(KeyEvent.VK_SPACE);
-		
-		if (!waitingForKeyPress) {
-			if ((leftPressed) && (!rightPressed)) {
-				ship.setHorizontalMovement(-moveSpeed);
-			} else if ((rightPressed) && (!leftPressed)) {
-				ship.setHorizontalMovement(moveSpeed);
-			}
 			
-			// if we're pressing fire, attempt to fire
-			if (firePressed) {
-				tryToFire();
-			}
-		} else {
-			if (!firePressed) {
-				fireHasBeenReleased = true;
-			}
-			if ((firePressed) && (fireHasBeenReleased)) {
+			if (window.isKeyPressed(KeyEvent.VK_SPACE)) {
 				waitingForKeyPress = false;
-				fireHasBeenReleased = false;
 				startGame();
 			}
 		}
-		
-		// if escape has been pressed, stop the game
-		if (window.isKeyPressed(KeyEvent.VK_ESCAPE)) {
-			System.exit(0);
+		else { 
+			ksession.execute(entities); 
 		}
+	}
+	
+	public void notifyAlienKilled() {
+		super.notifyAlienKilled();
+		System.out.println("Notify Alien Killed called");
 	}
 
 	private static KnowledgeBase readKnowledgeBase() throws Exception {
@@ -218,6 +146,14 @@ public class SpaceInvadersRules extends Game implements GameWindowCallback {
 		KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
 		kbase.addKnowledgePackages(kbuilder.getKnowledgePackages());
 		return kbase;
+	}
+	
+	public GameWindow getWindow() {
+		return window;
+	}
+	
+	public ArrayList<Entity> getEntities() {
+		return entities;
 	}
 	
 	public long getLastLoopTime() {
