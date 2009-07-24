@@ -125,11 +125,6 @@ public class SpaceInvadersRules extends Game implements GameWindowCallback {
 			ksession.execute(entities); 
 		}
 	}
-	
-	public void notifyAlienKilled() {
-		super.notifyAlienKilled();
-		System.out.println("Notify Alien Killed called");
-	}
 
 	private static KnowledgeBase readKnowledgeBase() throws Exception {
 		KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();

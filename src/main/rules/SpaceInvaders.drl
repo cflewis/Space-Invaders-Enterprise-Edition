@@ -28,7 +28,7 @@ rule "Process bullets hitting aliens"
     then
         game.getEntities().remove($shot);
         game.getEntities().remove($alien);
-        $otherAlien.setHorizontalMovement($otherAlien.getHorizontalMovement() * 1.00);
+        $otherAlien.setHorizontalMovement($otherAlien.getHorizontalMovement() * 1.04);
 end
 
 //rule "Process bullets hitting aliens"
