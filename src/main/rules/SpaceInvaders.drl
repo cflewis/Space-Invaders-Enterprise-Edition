@@ -8,6 +8,22 @@ import java.util.ArrayList;
 global java.lang.Long delta;
 global SpaceInvadersRules game; 
 
+rule "Start a new game when no entities exist at all"
+    when
+        not (exists Entity())
+    then
+        ShipEntity ship = new ShipEntity(game,"/sprites/ship.gif",370,550);
+        game.setShip(ship);
+        game.getEntities().add(ship);
+        
+        // create a block of aliens (5 rows, by 12 aliens, spaced evenly)
+        for (int row=0;row<5;row++) {
+            for (int x=0;x<12;x++) {
+                game.getEntities().add(new AlienEntity(game,100+(x*50),(50)+row*30));
+            }
+        }        
+end
+
 rule "Move each entity, then redraw"
     when
         $entity : Entity()
@@ -30,22 +46,6 @@ rule "Process bullets hitting aliens"
         game.getEntities().remove($alien);
         $otherAlien.setHorizontalMovement($otherAlien.getHorizontalMovement() * 1.04);
 end
-
-//rule "Process bullets hitting aliens"
-//    when
-//        $shot : ShotEntity()
-//        $alien : AlienEntity(this != $shot, eval($shot.collidesWith($alien)))
-//        $otherAliens : ArrayList() from collect (AlienEntity(this != $alien))
-//    then
-//        game.getEntities().remove($shot);
-//        game.getEntities().remove($alien);
-//        
-//        for (int i = 0; i < $otherAliens.size();i++)
-//        {
-//            AlienEntity $otherAlien = (AlienEntity)$otherAliens.get(i);
-//            $otherAlien.setHorizontalMovement($otherAlien.getHorizontalMovement() * 1.00);
-//        }
-//end
 
 // I think Drools only looks for getters and setters on the LHS,
 // not the RHS
@@ -100,11 +100,13 @@ rule "End the game when ESC is pressed"
 end       
 
 rule "End the game when all aliens are killed"
-    salience -1
+    salience 1
     when
         not (exists AlienEntity())
+        exists ShipEntity()
     then
         game.notifyWin();
+        game.getEntities().clear();
 end
 
 rule "End the game when an alien reaches the bottom"
@@ -112,4 +114,5 @@ rule "End the game when an alien reaches the bottom"
         exists AlienEntity(y > 570)
     then
         game.notifyDeath();
+        game.getEntities().clear();
 end

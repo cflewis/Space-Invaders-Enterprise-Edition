@@ -23,6 +23,7 @@ import org.newdawn.spaceinvaders.util.Keyboard;
  * @author Kevin Glass
  */
 public class Java2DGameWindow extends Canvas implements GameWindow {
+	private static final long serialVersionUID = 7791397331261816681L;
 	/** The stragey that allows us to use accelerate page flipping */
 	private BufferStrategy strategy;
 	/** True if the game is currently "running", i.e. the game loop is looping */

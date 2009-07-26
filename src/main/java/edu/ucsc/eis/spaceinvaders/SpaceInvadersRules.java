@@ -12,14 +12,13 @@ import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
 import org.drools.io.ResourceFactory;
 import org.drools.logger.KnowledgeRuntimeLogger;
-import org.drools.logger.KnowledgeRuntimeLoggerFactory;
-import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.StatelessKnowledgeSession;
 
 import org.newdawn.spaceinvaders.Entity;
 import org.newdawn.spaceinvaders.Game;
 import org.newdawn.spaceinvaders.GameWindow;
 import org.newdawn.spaceinvaders.GameWindowCallback;
+import org.newdawn.spaceinvaders.ShipEntity;
 import org.newdawn.spaceinvaders.SystemTimer;
 
 /**
@@ -85,7 +84,7 @@ public class SpaceInvadersRules extends Game implements GameWindowCallback {
 	
 	@Override
 	protected void initEntities() {
-		super.initEntities();
+		//super.initEntities();
 	}
 	
 	/**
@@ -118,10 +117,10 @@ public class SpaceInvadersRules extends Game implements GameWindowCallback {
 			
 			if (window.isKeyPressed(KeyEvent.VK_SPACE)) {
 				waitingForKeyPress = false;
-				startGame();
+				ksession.execute(entities);
 			}
 		}
-		else { 
+		else {
 			ksession.execute(entities); 
 		}
 	}
@@ -157,6 +156,14 @@ public class SpaceInvadersRules extends Game implements GameWindowCallback {
 	
 	public void setLastLoopTime(long lastLoopTime) {
 		this.lastLoopTime = lastLoopTime;
+	}
+	
+	public Entity getShip() {
+		return ship;
+	}
+	
+	public void setShip(ShipEntity ship) {
+		this.ship = ship;
 	}
 	
 	public static void main(String argv[]) {
