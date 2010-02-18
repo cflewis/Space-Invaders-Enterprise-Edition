@@ -9,3 +9,5 @@ You can build this by using Maven:
 	
 and run it using Maven too:
 	mvn exec:java
+
+Packaging is a little hard right now due to the timer.jar library. I haven't worked out how to get Maven to bundle that up with the assembly plugin, so `mvn package` isn't going to produce a JAR with dependencies that will actually execute.
