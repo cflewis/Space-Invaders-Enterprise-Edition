@@ -6,7 +6,7 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 global java.lang.Long delta;
-global SpaceInvadersRules game; 
+global SpaceInvadersEE game;
 
 rule "Start a new game when no entities exist at all"
     when

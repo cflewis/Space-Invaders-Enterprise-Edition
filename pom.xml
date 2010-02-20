@@ -5,8 +5,8 @@
 	<artifactId>siee</artifactId>
 	<packaging>jar</packaging>
 	<version>1.0-SNAPSHOT</version>
-	<name>siee</name>
-	<url>http://maven.apache.org</url>
+	<name>Space Invaders Enterprise Edition</name>
+	<url>http://www.zenetproject.com/pages/spaceinvaders</url>
 	<repositories>
 		<repository>
 			<id>JBoss</id>
@@ -43,7 +43,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<mainClass>edu.ucsc.eis.spaceinvaders.SpaceInvadersRules</mainClass>
+					<mainClass>edu.ucsc.eis.spaceinvaders.SpaceInvadersEE</mainClass>
 				</configuration>
 			</plugin>
 		</plugins>

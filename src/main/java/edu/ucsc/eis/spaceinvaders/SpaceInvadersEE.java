@@ -38,12 +38,12 @@ import org.newdawn.spaceinvaders.SystemTimer;
  * @author cflewis
  *
  */
-public class SpaceInvadersRules extends Game implements GameWindowCallback {
+public class SpaceInvadersEE extends Game implements GameWindowCallback {
 	private static final long serialVersionUID = 1L;
 	KnowledgeRuntimeLogger knowledgeLogger = null;
 	StatelessKnowledgeSession ksession = null;
 	
-	public SpaceInvadersRules() {
+	public SpaceInvadersEE() {
 		super(org.newdawn.spaceinvaders.ResourceFactory.JAVA2D);
 		
 		try {
@@ -71,8 +71,8 @@ public class SpaceInvadersRules extends Game implements GameWindowCallback {
 		
 		window.startRendering();
 	}
-	
-	@Override
+
+    @Override
 	protected void finalize() throws Throwable {
 		try {
 			//knowledgeLogger.close();
@@ -167,6 +167,6 @@ public class SpaceInvadersRules extends Game implements GameWindowCallback {
 	}
 	
 	public static void main(String argv[]) {
-		new SpaceInvadersRules();
+		new SpaceInvadersEE();
 	}
 }
